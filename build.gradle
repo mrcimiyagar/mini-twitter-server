@@ -1,0 +1,39 @@
+group 'TelegramTwitterServerProject'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.1"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: "com.github.johnrengelman.shadow"
+
+shadowJar {
+    classifier = 'fat'
+    mergeServiceFiles()
+    manifest { attributes 'Main-Class': 'drivers.MainDriver' }
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'org.neo4j:neo4j:3.2.0'
+    testCompile "org.neo4j:neo4j-kernel:3.2.0:tests@jar"
+    compile 'org.neo4j:neo4j-lucene-index:3.2.0'
+    compile 'org.xerial:sqlite-jdbc:3.8.11.1'
+    compile "com.esotericsoftware:kryonet:2.22.0-RC1"
+    compile 'com.esotericsoftware:kryo:4.0.1'
+    compile 'com.google.code.gson:gson:2.8.2'
+}
