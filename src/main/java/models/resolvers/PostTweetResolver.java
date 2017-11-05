@@ -46,7 +46,6 @@ public class PostTweetResolver extends BaseResolver {
                                 boolean found = false;
 
                                 if (requestPostTweet.parentId >= 0) {
-                                    System.out.println("requested parent id : " + requestPostTweet.parentId);
 
                                     String queryExist = "select (count(*) > 0) as found from 'Tweets" + requestPostTweet.pageId + "' where TweetId = ?";
                                     PreparedStatement pst = MainDriver.getInstance().getDatabaseDriver().getSqlDB().prepareStatement(queryExist);
@@ -69,15 +68,24 @@ public class PostTweetResolver extends BaseResolver {
 
                                 if (found) {
 
+                                    Node tweetNode = MainDriver.getInstance().getDatabaseDriver().getGraphDB().createNode();
+                                    tweetNode.setProperty("node-type", "tweet");
+                                    tweetNode.setProperty("page-id", requestPostTweet.pageId);
+
+                                    myNode.createRelationshipTo(tweetNode, DatabaseDriver.RelationTypes.TWEETED);
+
                                     long time = System.currentTimeMillis();
 
-                                    String query = "insert into 'Tweets" + requestPostTweet.pageId + "' (AuthorId, PageId, ParentId, Content, Time) values (?, ?, ?, ?, ?);";
+                                    String query = "insert into 'Tweets" + requestPostTweet.pageId + "' (AuthorId, PageId, ParentId, Content, Time, NodeId, LikesCount) values (?, ?, ?, ?, ?, ?, ?);";
                                     PreparedStatement statement = MainDriver.getInstance().getDatabaseDriver().getSqlDB().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                                     statement.setLong(1, netClient.getDbHumanNodeId());
                                     statement.setLong(2, requestPostTweet.pageId);
                                     statement.setInt(3, requestPostTweet.parentId);
                                     statement.setString(4, requestPostTweet.tweetContent);
                                     statement.setLong(5, time);
+                                    statement.setLong(6, tweetNode.getId());
+                                    statement.setLong(7, 0);
+
                                     int affectedRows = statement.executeUpdate();
 
                                     if (affectedRows > 0) {
@@ -88,11 +96,7 @@ public class PostTweetResolver extends BaseResolver {
 
                                                 int tweetId = resultSet.getInt(1);
 
-                                                Node tweetNode = MainDriver.getInstance().getDatabaseDriver().getGraphDB().createNode();
-                                                tweetNode.setProperty("node-type", "tweet");
                                                 tweetNode.setProperty("tweet-id", tweetId);
-
-                                                myNode.createRelationshipTo(tweetNode, DatabaseDriver.RelationTypes.TWEETED);
 
                                                 if (requestPostTweet.parentId == -1) {
 
@@ -107,7 +111,7 @@ public class PostTweetResolver extends BaseResolver {
                                                     }
                                                 }
 
-                                                Tweet tweet = new Tweet();
+                                                /*Tweet tweet = new Tweet();
                                                 tweet.setTweetId(tweetId);
                                                 tweet.setPageId(requestPostTweet.pageId);
 
@@ -119,14 +123,17 @@ public class PostTweetResolver extends BaseResolver {
                                                 tweet.setParentId(requestPostTweet.parentId);
                                                 tweet.setContent(requestPostTweet.tweetContent);
                                                 tweet.setTime(time);
+                                                tweet.setNodeId(tweetNode.getId());
+                                                tweet.setLikesCount(0);
+                                                tweet.setLikesCount(false);*/
 
                                                 AnswerPostTweet answerPostTweet = new AnswerPostTweet();
                                                 answerPostTweet.packetCode = requestPostTweet.packetCode;
                                                 answerPostTweet.answerStatus = AnswerStatus.OK;
-                                                answerPostTweet.tweet = tweet;
+                                                //answerPostTweet.tweet = tweet;
                                                 netClient.getConnection().sendTCP(answerPostTweet);
 
-                                                NotifyNewTweet notifyNewTweet = new NotifyNewTweet();
+                                                /*NotifyNewTweet notifyNewTweet = new NotifyNewTweet();
                                                 notifyNewTweet.setTweet(tweet);
 
                                                 if ((boolean) targetHumanNode.getProperty("is-online")) {
@@ -151,9 +158,7 @@ public class PostTweetResolver extends BaseResolver {
 
                                                             Node myHumanNode = MainDriver.getInstance().getDatabaseDriver().getGraphDB().getNodeById(netClient.getDbHumanNodeId());
 
-                                                            for (Relationship relationship : myHumanNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWS, Direction.INCOMING)) {
-
-                                                                System.out.println("sending notify tweet to user : " + relationship.getStartNode().getProperty("user-title").toString());
+                                                            for (Relationship relationship : myHumanNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWED, Direction.INCOMING)) {
 
                                                                 try {
                                                                     Node followerNode = relationship.getStartNode();
@@ -182,7 +187,7 @@ public class PostTweetResolver extends BaseResolver {
                                                             tx.close();
                                                         }
                                                     }).start();
-                                                }
+                                                }*/
 
                                             } else {
 

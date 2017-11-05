@@ -12,7 +12,6 @@ import models.packets.base.BaseNotify;
 import models.resolvers.base.BaseResolver;
 import org.neo4j.graphdb.*;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -38,7 +37,7 @@ public class FollowResolver extends BaseResolver {
 
                     boolean followExists = false;
 
-                    for (Relationship relationship : myNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWS, Direction.OUTGOING)) {
+                    for (Relationship relationship : myNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWED, Direction.OUTGOING)) {
                         if (relationship.getEndNodeId() == requestFollow.targetUserId) {
                             followExists = true;
                             break;
@@ -53,37 +52,30 @@ public class FollowResolver extends BaseResolver {
 
                         if (targetHumanNode != null && targetHumanNode.getProperty("node-type").toString().equals("human")) {
 
-                            myNode.createRelationshipTo(targetHumanNode, DatabaseDriver.RelationTypes.FOLLOWS);
+                            boolean requestExists = false;
 
-                            int followersCount = (int) targetHumanNode.getProperty("followers-count");
-                            followersCount++;
-                            targetHumanNode.setProperty("followers-count", followersCount);
-
-                            int followingCount = (int) myNode.getProperty("following-count");
-                            followingCount++;
-                            myNode.setProperty("following-count", followingCount);
-
-                            AnswerFollow answerFollow = new AnswerFollow();
-                            answerFollow.packetCode = requestFollow.packetCode;
-                            answerFollow.answerStatus = AnswerStatus.OK;
-                            netClient.getConnection().sendTCP(answerFollow);
-
-                            NotifyNewFollow notifyNewFollow = new NotifyNewFollow();
-                            notifyNewFollow.setFollowerId(myNode.getId());
-
-                            if ((boolean)targetHumanNode.getProperty("is-online")) {
-                                com.esotericsoftware.kryonet.Connection connection = MainDriver.getInstance()
-                                        .getNetworkDriver().getConnectionById((int)targetHumanNode
-                                                .getProperty("connection-id"));
-                                if (connection != null) {
-                                    connection.sendTCP(notifyNewFollow);
-                                }
-                                else {
-                                    cacheUpdate(targetHumanNode.getId(), notifyNewFollow);
+                            for (Relationship relationship : myNode.getRelationships(DatabaseDriver.RelationTypes.REQUESTED, Direction.OUTGOING)) {
+                                if (relationship.getEndNodeId() == requestFollow.targetUserId) {
+                                    requestExists = true;
+                                    break;
                                 }
                             }
+
+                            if (!requestExists) {
+
+                                myNode.createRelationshipTo(targetHumanNode, DatabaseDriver.RelationTypes.REQUESTED);
+
+                                AnswerFollow answerFollow = new AnswerFollow();
+                                answerFollow.answerStatus = AnswerStatus.OK;
+                                answerFollow.packetCode = requestFollow.packetCode;
+                                netClient.getConnection().sendTCP(answerFollow);
+                            }
                             else {
-                                cacheUpdate(targetHumanNode.getId(), notifyNewFollow);
+
+                                AnswerFollow answerFollow = new AnswerFollow();
+                                answerFollow.packetCode = requestFollow.packetCode;
+                                answerFollow.answerStatus = AnswerStatus.ERROR_204;
+                                netClient.getConnection().sendTCP(answerFollow);
                             }
                         }
                         else {

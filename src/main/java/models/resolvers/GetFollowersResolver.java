@@ -32,21 +32,52 @@ public class GetFollowersResolver extends BaseResolver {
 
                 if (targetHumanNode != null && targetHumanNode.getProperty("node-type").toString().equals("human")) {
 
-                    ArrayList<Human> result = new ArrayList<>();
+                    Node myNode = MainDriver.getInstance().getDatabaseDriver().getGraphDB().getNodeById(netClient.getDbHumanNodeId());
 
-                    for (Relationship relationship : targetHumanNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWS, Direction.INCOMING)) {
-                        Human human = new Human();
-                        Node node = relationship.getStartNode();
-                        human.setHumanId(node.getId());
-                        human.setUserTitle(node.getProperty("user-title").toString());
-                        result.add(human);
+                    boolean isPrivate = (boolean)targetHumanNode.getProperty("is-private");
+
+                    boolean accessPermitted = false;
+
+                    if (requestGetFollowers.humanId == netClient.getDbHumanNodeId()) {
+                        accessPermitted = true;
+                    }
+                    else if (!isPrivate) {
+                        accessPermitted = true;
+                    }
+                    else {
+                        for (Relationship relationship : myNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWED, Direction.OUTGOING)) {
+                            if (relationship.getEndNodeId() == requestGetFollowers.humanId) {
+                                accessPermitted = true;
+                                break;
+                            }
+                        }
                     }
 
-                    AnswerGetFollowers answerGetFollowers = new AnswerGetFollowers();
-                    answerGetFollowers.answerStatus = AnswerStatus.OK;
-                    answerGetFollowers.packetCode = requestGetFollowers.packetCode;
-                    answerGetFollowers.humans = result;
-                    netClient.getConnection().sendTCP(answerGetFollowers);
+                    if (accessPermitted) {
+
+                        ArrayList<Human> result = new ArrayList<>();
+
+                        for (Relationship relationship : targetHumanNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWED, Direction.INCOMING)) {
+                            Human human = new Human();
+                            Node node = relationship.getStartNode();
+                            human.setHumanId(node.getId());
+                            human.setUserTitle(node.getProperty("user-title").toString());
+                            result.add(human);
+                        }
+
+                        AnswerGetFollowers answerGetFollowers = new AnswerGetFollowers();
+                        answerGetFollowers.answerStatus = AnswerStatus.OK;
+                        answerGetFollowers.packetCode = requestGetFollowers.packetCode;
+                        answerGetFollowers.humans = result;
+                        netClient.getConnection().sendTCP(answerGetFollowers);
+                    }
+                    else {
+
+                        AnswerGetFollowers answerGetFollowers = new AnswerGetFollowers();
+                        answerGetFollowers.answerStatus = AnswerStatus.ERROR_802;
+                        answerGetFollowers.packetCode = requestGetFollowers.packetCode;
+                        netClient.getConnection().sendTCP(answerGetFollowers);
+                    }
                 }
                 else {
 

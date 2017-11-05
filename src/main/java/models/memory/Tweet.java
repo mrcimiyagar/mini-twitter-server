@@ -1,5 +1,7 @@
 package models.memory;
 
+import java.util.ArrayList;
+
 public class Tweet {
 
     private int tweetId;
@@ -8,6 +10,10 @@ public class Tweet {
     private int parentId;
     private String content;
     private long time;
+    private long nodeId;
+    private long likesCount;
+    private boolean likedByMe;
+    private ArrayList<Tweet> topComments;
 
     public long getPageId() {
         return pageId;
@@ -55,5 +61,38 @@ public class Tweet {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public long getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(long nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public long getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(long likesCount) {
+        this.likesCount = likesCount;
+    }
+
+    public boolean isLikedByMe() {
+        return likedByMe;
+    }
+
+    public void setLikedByMe(boolean likedByMe) {
+        this.likedByMe = likedByMe;
+    }
+
+
+    public ArrayList<Tweet> getTopComments() {
+        return topComments;
+    }
+
+    public void setTopComments(ArrayList<Tweet> topComments) {
+        this.topComments = topComments;
     }
 }

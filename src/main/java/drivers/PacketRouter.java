@@ -27,6 +27,16 @@ public class PacketRouter {
         this.requestResolvers.put(new RequestGetHumanById().getRequestCode(), new GetHumanByIdResolver());
         this.requestResolvers.put(new RequestGetFollowers().getRequestCode(), new GetFollowersResolver());
         this.requestResolvers.put(new RequestGetFollowings().getRequestCode(), new GetFollowingsResolver());
+        this.requestResolvers.put(new RequestEditUserBio().getRequestCode(), new EditBioResolver());
+        this.requestResolvers.put(new RequestLikeTweet().getRequestCode(), new LikeTweetResolver());
+        this.requestResolvers.put(new RequestUnlikeTweet().getRequestCode(), new UnlikeTweetResolver());
+        this.requestResolvers.put(new RequestGetTopTweets().getRequestCode(), new GetTopTweetsResolver());
+        this.requestResolvers.put(new RequestGetFollowRequests().getRequestCode(), new GetFollowRequestsResolver());
+        this.requestResolvers.put(new RequestAcceptFollowRequest().getRequestCode(), new AcceptFollowRequestResolver());
+        this.requestResolvers.put(new RequestIgnoreFollowRequest().getRequestCode(), new IgnoreFollowRequestResolver());
+        this.requestResolvers.put(new RequestGetFeed().getRequestCode(), new GetFeedResolver());
+        this.requestResolvers.put(new RequestSwitchProfileMode().getRequestCode(), new SwitchProfileModeResolver());
+        this.requestResolvers.put(new RequestDeleteTweet().getRequestCode(), new DeleteTweetResolver());
     }
 
     void directPacket(NetClient netClient, Object rawRequest) {

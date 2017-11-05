@@ -5,7 +5,6 @@ import drivers.DatabaseDriver;
 import drivers.MainDriver;
 import models.network.NetClient;
 import models.packets.AnswerUnFollow;
-import models.packets.NotifyNewFollow;
 import models.packets.NotifyUnFollow;
 import models.packets.RequestUnFollow;
 import models.packets.base.AnswerStatus;
@@ -37,7 +36,7 @@ public class UnFollowResolver extends BaseResolver {
 
                     Relationship targetRelationship = null;
 
-                    for (Relationship relationship : myNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWS, Direction.OUTGOING)) {
+                    for (Relationship relationship : myNode.getRelationships(DatabaseDriver.RelationTypes.FOLLOWED, Direction.OUTGOING)) {
                         if (relationship.getEndNodeId() == requestUnFollow.targetUserId) {
                             targetRelationship = relationship;
                             break;

@@ -4,17 +4,34 @@ public class Human {
 
     private long humanId;
     private String userTitle;
+    private String userBio;
     private int postsCount;
     private int followersCount;
     private int followingCount;
     private boolean profilePrivate;
 
-    public boolean isProfilePrivate() {
-        return profilePrivate;
+    public long getHumanId() {
+        return humanId;
     }
 
-    public void setProfilePrivate(boolean profilePrivate) {
-        this.profilePrivate = profilePrivate;
+    public void setHumanId(long humanId) {
+        this.humanId = humanId;
+    }
+
+    public String getUserTitle() {
+        return userTitle;
+    }
+
+    public void setUserTitle(String userTitle) {
+        this.userTitle = userTitle;
+    }
+
+    public String getUserBio() {
+        return userBio;
+    }
+
+    public void setUserBio(String userBio) {
+        this.userBio = userBio;
     }
 
     public int getPostsCount() {
@@ -41,19 +58,11 @@ public class Human {
         this.followingCount = followingCount;
     }
 
-    public long getHumanId() {
-        return humanId;
+    public boolean isProfilePrivate() {
+        return profilePrivate;
     }
 
-    public void setHumanId(long humanId) {
-        this.humanId = humanId;
-    }
-
-    public String getUserTitle() {
-        return userTitle;
-    }
-
-    public void setUserTitle(String userTitle) {
-        this.userTitle = userTitle;
+    public void setProfilePrivate(boolean profilePrivate) {
+        this.profilePrivate = profilePrivate;
     }
 }

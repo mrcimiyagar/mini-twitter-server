@@ -49,9 +49,18 @@ public class LoginResolver extends BaseResolver {
                 answerLogin.packetCode = requestLogin.packetCode;
                 answerLogin.userTitle = humanNode.getProperty("user-title").toString();
 
+                String query = "select * from UsersTitles where HumanId = ? ";
+                PreparedStatement prpStmt = MainDriver.getInstance().getDatabaseDriver().getSqlDB().prepareStatement(query);
+                prpStmt.setLong(1, netClient.getDbHumanNodeId());
+                ResultSet rs = prpStmt.executeQuery();
+
+                if (rs.next()) {
+                    answerLogin.userBio = rs.getString("UserBio");
+                }
+
+                prpStmt.close();
+
                 answerLogin.postsCount = (int) humanNode.getProperty("posts-count");
-                answerLogin.followersCount = (int) humanNode.getProperty("followers-count");
-                answerLogin.followingCount = (int) humanNode.getProperty("following-count");
 
                 netClient.getConnection().sendTCP(answerLogin);
 
@@ -110,6 +119,12 @@ public class LoginResolver extends BaseResolver {
         catch (Exception ignored) {
             ignored.printStackTrace();
             tx.failure();
+
+            AnswerLogin answerLogin = new AnswerLogin();
+            answerLogin.answerStatus = AnswerStatus.ERROR_101;
+            answerLogin.packetCode = requestLogin.packetCode;
+
+            netClient.getConnection().sendTCP(answerLogin);
         }
         finally {
             tx.close();

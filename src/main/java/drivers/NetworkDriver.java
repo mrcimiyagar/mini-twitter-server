@@ -34,6 +34,8 @@ public class NetworkDriver {
         server.getKryo().register(NotifyUnFollow.class);
         server.getKryo().register(NotifyNewFollow.class);
         server.getKryo().register(NotifyNewTweet.class);
+        server.getKryo().register(NotifyFollowRequestAccepted.class);
+        server.getKryo().register(NotifyFollowRequestIgnored.class);
         server.getKryo().register(BaseNotify.class);
         server.getKryo().register(AnswerStatus.class);
         server.getKryo().register(RequestRegister.class);
@@ -46,6 +48,16 @@ public class NetworkDriver {
         server.getKryo().register(RequestGetHumanById.class);
         server.getKryo().register(RequestGetFollowers.class);
         server.getKryo().register(RequestGetFollowings.class);
+        server.getKryo().register(RequestEditUserBio.class);
+        server.getKryo().register(RequestLikeTweet.class);
+        server.getKryo().register(RequestUnlikeTweet.class);
+        server.getKryo().register(RequestGetTopTweets.class);
+        server.getKryo().register(RequestGetFollowRequests.class);
+        server.getKryo().register(RequestAcceptFollowRequest.class);
+        server.getKryo().register(RequestIgnoreFollowRequest.class);
+        server.getKryo().register(RequestGetFeed.class);
+        server.getKryo().register(RequestSwitchProfileMode.class);
+        server.getKryo().register(RequestDeleteTweet.class);
         server.getKryo().register(AnswerRequest.class);
         server.getKryo().register(AnswerRegister.class);
         server.getKryo().register(AnswerLogin.class);
@@ -57,6 +69,16 @@ public class NetworkDriver {
         server.getKryo().register(AnswerGetHumanById.class);
         server.getKryo().register(AnswerGetFollowers.class);
         server.getKryo().register(AnswerGetFollowings.class);
+        server.getKryo().register(AnswerEditUserBio.class);
+        server.getKryo().register(AnswerLikeTweet.class);
+        server.getKryo().register(AnswerUnlikeTweet.class);
+        server.getKryo().register(AnswerGetTopTweets.class);
+        server.getKryo().register(AnswerGetFollowRequests.class);
+        server.getKryo().register(AnswerAcceptFollowRequest.class);
+        server.getKryo().register(AnswerIgnoreFollowRequest.class);
+        server.getKryo().register(AnswerGetFeed.class);
+        server.getKryo().register(AnswerSwitchProfileMode.class);
+        server.getKryo().register(AnswerDeleteTweet.class);
         server.getKryo().register(ArrayList.class);
 
         server.start();

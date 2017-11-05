@@ -39,16 +39,18 @@ public class RegisterResolver extends BaseResolver {
             myNode.setProperty("posts-count", 0);
             myNode.setProperty("followers-count", 0);
             myNode.setProperty("following-count", 0);
+            myNode.setProperty("is-private", false);
             myNode.setProperty("connection-id", -1);
 
-            String sqlQuery0 = "insert into UsersTitles (HumanId, UserTitle) values (?, ?);";
+            String sqlQuery0 = "insert into UsersTitles (HumanId, UserTitle, UserBio) values (?, ?, ?);";
             PreparedStatement prpStmt = MainDriver.getInstance().getDatabaseDriver().getSqlDB().prepareStatement(sqlQuery0);
             prpStmt.setLong(1, userId);
             prpStmt.setString(2, requestRegister.userTitle);
+            prpStmt.setString(3, "");
             prpStmt.executeUpdate();
             prpStmt.close();
 
-            String sqlQuery = "create table if not exists 'Tweets" + userId + "' (TweetId integer primary key autoincrement, PageId bigint, AuthorId bigint, ParentId integer, Content var, Time bigint);";
+            String sqlQuery = "create table if not exists 'Tweets" + userId + "' (TweetId integer primary key autoincrement, PageId bigint, AuthorId bigint, ParentId integer, Content var, Time bigint, NodeId bigint, LikesCount bigint);";
             Statement statement = MainDriver.getInstance().getDatabaseDriver().getSqlDB().createStatement();
             statement.execute(sqlQuery);
             statement.close();
